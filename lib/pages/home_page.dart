@@ -55,6 +55,7 @@ class _HomePageState extends State<HomePage> {
           showText = val['data']['name'].toString();
         });
       });
+
     }
   }
 
