@@ -25,6 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   # 联网请求库
   dio: ^2.1.3
+  # banner库
+  flutter_swiper: ^1.1.6
 
 dev_dependencies:
   flutter_test:

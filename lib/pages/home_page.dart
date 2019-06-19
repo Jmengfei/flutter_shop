@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import '../config/httpHeaders.dart';
+import '../service/service_method.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+import 'dart:convert';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,50 +10,56 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String showText = '还没有请求数据';
+
+  String homePageContent = '正在获取数据';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('百姓生活+'),),
+      body: FutureBuilder(
+        future: getHomePageContent(),
+        builder: (context,snapshot){
+          if(snapshot.hasData){
+            var data = json.decode(snapshot.data.toString());
+            List<Map> swiper = (data['data']['slides'] as List).cast();
+            return Column(
+              children: <Widget>[
+                SwiperCustom(swiperDateList: swiper)
+              ],
+            );
+          }else{
+
+            return Center(
+              child: Text('加载中...'),
+            );
+          }
+        },
+      )
+    );
+  }
+}
+
+/// 首页轮播组件
+class SwiperCustom extends StatelessWidget {
+  final List swiperDateList;
+  SwiperCustom({this.swiperDateList});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Scaffold(
-        appBar: AppBar(title: Text('请求远程数据'),),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              RaisedButton(
-                onPressed: _jike,
-                child: Text('请求数据'),
-              ),
-              Text(showText)
-            ],
-          ),
-        ),
+      height: 333,
+      child: Swiper(
+        itemBuilder: (BuildContext context, int index){
+          return Image.network('${swiperDateList[index]['image']}',fit: BoxFit.fill,);
+        },
+        itemCount:swiperDateList.length,
+        pagination: SwiperPagination(),
+        autoplay: true,
       ),
     );
   }
-
-  void _jike(){
-    print('开始向极客时间请求数据......................');
-    getHttp().then((val){
-        setState(() {
-          showText = val['data'].toString();
-        });
-      }
-    );
-
-  }
-
-  Future getHttp() async{
-    try{
-      Response response;
-      Dio dio = new Dio();
-      dio.options.headers=httpHeaders;
-      response = await dio.get("https://time.geekbang.org/serv/v1/column/newAll");
-      print(response);
-      return response.data;
-    }catch(e){
-      return print(e);
-    }
-  }
-
 }
+
+
 
