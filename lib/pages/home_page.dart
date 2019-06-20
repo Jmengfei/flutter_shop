@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context,snapshot){
           if(snapshot.hasData){
             var data = json.decode(snapshot.data.toString());
+            print("----------------$data");
             List<Map> swiper = (data['data']['slides'] as List).cast();
             return Column(
               children: <Widget>[
