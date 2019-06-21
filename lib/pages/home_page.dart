@@ -23,11 +23,12 @@ class _HomePageState extends State<HomePage> {
         builder: (context,snapshot){
           if(snapshot.hasData){
             var data = json.decode(snapshot.data.toString());
-            print("----------------$data");
             List<Map> swiper = (data['data']['slides'] as List).cast();
+            List<Map> categoryList = (data['data']['category'] as List).cast();
             return Column(
               children: <Widget>[
-                SwiperCustom(swiperDateList: swiper)
+                SwiperCustom(swiperDateList: swiper),
+                TopNavigator(navigatorList: categoryList),
               ],
             );
           }else{
@@ -46,17 +47,11 @@ class _HomePageState extends State<HomePage> {
 class SwiperCustom extends StatelessWidget {
   final List swiperDateList;
   SwiperCustom({this.swiperDateList});
-
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 750,height: 1334)..init(context);
-    print('设备像素密度：${ScreenUtil.pixelRatio}');
-    print('设备的高：${ScreenUtil.screenHeight}');
-    print('设备的宽：${ScreenUtil.screenWidth}');
-
     return Container(
-      height: ScreenUtil().setWidth(333),
-      width: ScreenUtil().setHeight(750),
+      height: ScreenUtil().setHeight(333),
+      width: ScreenUtil().setWidth(750),
       child: Swiper(
         itemBuilder: (BuildContext context, int index){
           return Image.network('${swiperDateList[index]['image']}',fit: BoxFit.fill,);
@@ -68,6 +63,43 @@ class SwiperCustom extends StatelessWidget {
     );
   }
 }
+
+class TopNavigator extends StatelessWidget {
+  final List navigatorList;
+
+  TopNavigator({Key key,this.navigatorList}):super(key:key);
+
+  Widget _gridViewItemUI(BuildContext context,item){
+    return InkWell(
+      onTap: (){print('点击了导航');},
+      child: Column(
+        children: <Widget>[
+          Image.network(item['image'],width: ScreenUtil().setWidth(80),),
+          Text(item['mallCategoryName'])
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if(this.navigatorList.length > 10){
+      this.navigatorList.removeRange(10, this.navigatorList.length);
+    }
+    return Container(
+      height: ScreenUtil().setHeight(350),
+      padding: EdgeInsets.all(5.0),
+      child:GridView.count(
+          crossAxisCount: 5,
+          padding: EdgeInsets.all(5.0),
+          children: navigatorList.map((item){
+            return _gridViewItemUI(context, item);
+        }).toList(),
+      ),
+    );
+  }
+}
+
 
 
 
