@@ -10,9 +10,18 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
 
   String homePageContent = '正在获取数据';
+
+  @override
+  void initState() {
+    super.initState();
+    print("home_page 初始化11111111111");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +37,13 @@ class _HomePageState extends State<HomePage> {
             String adPicture = data['data']['advertesPicture']['PICTURE_ADDRESS'];
             String leaderImage = data['data']['shopInfo']['leaderImage'];
             String leaderPhone = data['data']['shopInfo']['leaderPhone'];
+            List<Map> recommend = (data['data']['recommend'] as List).cast();
+            String floor1Title = data['data']['floor1Pic']['PICTURE_ADDRESS'];
+            String floor2Title = data['data']['floor2Pic']['PICTURE_ADDRESS'];
+            String floor3Title = data['data']['floor3Pic']['PICTURE_ADDRESS'];
+            List<Map> floor1 = (data['data']['floor1'] as List).cast();
+            List<Map> floor2 = (data['data']['floor2'] as List).cast();
+            List<Map> floor3 = (data['data']['floor3'] as List).cast();
 
             return SingleChildScrollView(
               child: Column(
@@ -35,13 +51,19 @@ class _HomePageState extends State<HomePage> {
                   SwiperCustom(swiperDateList: swiper),
                   TopNavigator(navigatorList: categoryList),
                   AdBanner(adPicture: adPicture),
-                  LeaderPhone(leaderImage: leaderImage,leaderPhone: leaderPhone,)
+                  LeaderPhone(leaderImage: leaderImage,leaderPhone: leaderPhone),
+                  Recommend(recommendList: recommend),
+                  FloorTitle(picture_address: floor1Title),
+                  FloorContent(floorGoodsList: floor1),
+                  FloorTitle(picture_address: floor2Title),
+                  FloorContent(floorGoodsList: floor2),
+                  FloorTitle(picture_address: floor3Title),
+                  FloorContent(floorGoodsList: floor3),
                 ],
               )
             );
 
           }else{
-
             return Center(
               child: Text('加载中...'),
             );
@@ -72,7 +94,8 @@ class SwiperCustom extends StatelessWidget {
     );
   }
 }
-/// 8个中部导航位制作
+
+/// 8个中部导航位
 class TopNavigator extends StatelessWidget {
   final List navigatorList;
 
@@ -109,7 +132,7 @@ class TopNavigator extends StatelessWidget {
   }
 }
 
-/// 广告位导航制作
+/// 广告位导航
 class AdBanner extends StatelessWidget {
 
   final String adPicture;
@@ -149,6 +172,158 @@ class LeaderPhone extends StatelessWidget {
     }
   }
 }
+
+/// 商品推荐
+class Recommend extends StatelessWidget {
+  final List recommendList;
+
+  Recommend({Key key, this.recommendList}):super(key: key);
+  // 标题
+  Widget _titleWidget(){
+    return Container(
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.fromLTRB(10.0, 2.0, 0, 5.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Colors.black12,width: 0.5)
+        )
+      ),
+
+      child: Text('商品推荐',style: TextStyle(color: Colors.pink),),
+    );
+  }
+
+  // 商品单独项
+  Widget _itemWidget(index){
+    return InkWell(
+      onTap: (){},
+      child: Container(
+        height: ScreenUtil().setHeight(330),
+        width: ScreenUtil().setWidth(250),
+        padding: EdgeInsets.all(5.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            right: BorderSide(color: Colors.black12,width: 0.5)
+          )
+        ),
+        child: Column(
+          children: <Widget>[
+            Image.network(
+              recommendList[index]['image'],
+              width: ScreenUtil().setWidth(250),
+              height: ScreenUtil().setHeight(226),
+            ),
+            Text('￥${recommendList[index]['mallPrice']}'),
+            Text(
+              '￥${recommendList[index]['price']}',
+              style: TextStyle(
+                decoration: TextDecoration.lineThrough,
+                color: Colors.grey
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 横向列表方法
+  Widget _recommendList(){
+    return Container(
+      height: ScreenUtil().setHeight(330),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: recommendList.length,
+        itemBuilder: (context,index){
+          return _itemWidget(index);
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 20.0),
+      child: Column(
+        children: <Widget>[
+          _titleWidget(),
+          _recommendList()
+        ],
+      ),
+    );
+  }
+}
+
+/// 楼层标题
+class FloorTitle extends StatelessWidget {
+  final String picture_address;
+  FloorTitle({Key key, this.picture_address}):super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(8.0),
+      child: Image.network(picture_address),
+    );
+  }
+}
+
+/// 楼层商品列表
+class FloorContent extends StatelessWidget {
+  final List floorGoodsList;
+  FloorContent({Key key, this.floorGoodsList}): super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          _firstRow(),
+          _otherGoods()
+        ],
+      ),
+    );
+  }
+
+  Widget _firstRow(){
+    return Row(
+      children: <Widget>[
+        _goodsItem(floorGoodsList[0]),
+        Column(
+          children: <Widget>[
+            _goodsItem(floorGoodsList[1]),
+            _goodsItem(floorGoodsList[2]),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _otherGoods(){
+    return Row(
+      children: <Widget>[
+        _goodsItem(floorGoodsList[3]),
+        _goodsItem(floorGoodsList[4]),
+      ],
+    );
+  }
+
+  Widget _goodsItem(Map goods){
+    return Container(
+      width: ScreenUtil().setWidth(375.0),
+      child: InkWell(
+        onTap: (){print('点击了楼层商品');},
+        child: Image.network(goods['image']),
+      ),
+    );
+  }
+
+}
+
+
+
 
 
 
