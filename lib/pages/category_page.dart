@@ -26,7 +26,6 @@ class _CategoryPageState extends State<CategoryPage> {
   void _getCategory() async{
     await request(servicePath['getCategory']).then((val){
       var data = json.decode(val.toString());
-
       CategoryListModel listModel = CategoryListModel.fromJson(data['data']);
       listModel.data.forEach((item)=> print(item.mallCategoryName));
   
