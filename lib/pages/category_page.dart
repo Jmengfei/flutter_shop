@@ -75,7 +75,6 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
     isClick = (index == listIndex)? true : false;
     return InkWell(
       onTap: (){
-
         setState(() {
           listIndex = index;
         });
@@ -87,7 +86,7 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
         height: ScreenUtil().setHeight(100),
         padding: EdgeInsets.only(left: 10,top: 14),
         decoration: BoxDecoration(
-          color: isClick?Colors.black12 : Colors.white,
+          color: isClick?Color.fromRGBO(236, 236, 236, 1.0) : Colors.white,
           border: Border(
             bottom: BorderSide(width: 1.0,color: Colors.black12)
           )
@@ -102,10 +101,11 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
     await request(servicePath['getCategory']).then((val){
       var data = json.decode(val.toString());
       CategoryModel listModel = CategoryModel.fromJson(data);
-      listModel.data.forEach((item)=> print(item.mallCategoryName));
       setState(() {
         list = listModel.data;
       });
+
+      Provide.value<ChildCategory>(context).getChildCategory(list[0].bxMallSubDto);
     });
   }
 }
