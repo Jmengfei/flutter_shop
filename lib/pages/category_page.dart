@@ -4,6 +4,8 @@ import 'dart:convert';
 import '../config/service_url.dart';
 import '../model/category.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../provide/child_category.dart';
+import 'package:provide/provide.dart';
 
 class CategoryPage extends StatefulWidget {
   @override
@@ -20,15 +22,17 @@ class _CategoryPageState extends State<CategoryPage> {
         child: Row(
           children: <Widget>[
             LeftCategoryNav(),
-            Text('右侧分类')
+            Column(
+              children: <Widget>[
+                RightCategoryNav(),
+                Text('右侧分类')
+              ],
+            )
           ],
         ),
       ),
     );
   }
-
-
-
 }
 
 /// 左侧大类导航
@@ -40,6 +44,7 @@ class LeftCategoryNav extends StatefulWidget {
 class _LeftCategoryNavState extends State<LeftCategoryNav> {
 
   List list = [];
+  int listIndex = 0;
 
   @override
   void initState() {
@@ -66,13 +71,23 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
   }
 
   Widget _leftInkWell(int index){
+    bool isClick= false;
+    isClick = (index == listIndex)? true : false;
     return InkWell(
-      onTap: (){},
+      onTap: (){
+
+        setState(() {
+          listIndex = index;
+        });
+
+        var childList = list[index].bxMallSubDto;
+        Provide.value<ChildCategory>(context).getChildCategory(childList);
+      },
       child: Container(
         height: ScreenUtil().setHeight(100),
         padding: EdgeInsets.only(left: 10,top: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isClick?Colors.black12 : Colors.white,
           border: Border(
             bottom: BorderSide(width: 1.0,color: Colors.black12)
           )
@@ -94,5 +109,52 @@ class _LeftCategoryNavState extends State<LeftCategoryNav> {
     });
   }
 }
+
+class RightCategoryNav extends StatefulWidget {
+  @override
+  _RightCategoryNavState createState() => _RightCategoryNavState();
+}
+
+class _RightCategoryNavState extends State<RightCategoryNav> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Provide<ChildCategory>(
+      builder:(context,child,childCategory){
+        return Container(
+          height: ScreenUtil().setHeight(80),
+          width: ScreenUtil().setWidth(560),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                  bottom: BorderSide(color: Colors.black12,width: 1.0)
+              )
+          ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: childCategory.childCategoryList.length,
+            itemBuilder: (context,index){
+              return _rightInkWell(childCategory.childCategoryList[index]);
+            },
+          ),
+        );
+      }
+    );
+  }
+
+  Widget _rightInkWell(BxMallSubDto childCategoryList){
+    return InkWell(
+      onTap: (){},
+      child: Container(
+        padding: EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 10.0),
+        child: Text(
+          childCategoryList.mallSubName,
+          style: TextStyle(fontSize: ScreenUtil().setSp(28)),
+        ),
+      ),
+    );
+  }
+}
+
 
 
