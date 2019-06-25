@@ -9,7 +9,7 @@ import '../provide/category_goods_list.dart';
 import 'package:provide/provide.dart';
 import '../model/categoryGoodsList.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CategoryPage extends StatefulWidget {
   @override
@@ -236,8 +236,6 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
             print('进入页面第一次初始化: ${e}');
           }
 
-
-
           if(data.goodsList.length > 0){
             return Expanded( // 解决溢出的问题
               child: Container(
@@ -283,10 +281,25 @@ class _CategoryGoodsListState extends State<CategoryGoodsList> {
       'page': Provide.value<ChildCategory>(context).page
     };
 
+    print('categoryId==${Provide.value<ChildCategory>(context).categoryId}');
+    print('categorySubId==${Provide.value<ChildCategory>(context).subId}');
+    print('page==${Provide.value<ChildCategory>(context).page}');
+
     await request(servicePath['getMallGoods'],formData: data).then((val){
+
       var data = json.decode(val.toString());
       CategoryGoodsListModel goodsList = CategoryGoodsListModel.fromJson(data);
-      if(goodsList == null){
+
+      print("goodsList ==================${goodsList}");
+      if(goodsList.data == null){
+        Fluttertoast.showToast(
+            msg: '没有更多了',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.pink,
+          textColor: Colors.white,
+          fontSize: 16.0
+        );
         Provide.value<ChildCategory>(context).changeNoMoreText('没有更多了...');
       }else{
         Provide.value<CategoryGoodsListProvide>(context).getMoreGoodsList(goodsList.data);
