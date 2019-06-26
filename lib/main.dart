@@ -7,17 +7,20 @@ import './provide/category_goods_list.dart';
 import 'package:fluro/fluro.dart';
 import './routers/routes.dart';
 import './routers/application.dart';
+import './provide/details_info.dart';
 
 
 void main(){
   var counter = Counter();
   var childCategory = ChildCategory();
   var categoryGoodsListProvide = CategoryGoodsListProvide();
+  var detailsInfoProvide = DetailsInfoProvide();
   var providers = Providers();
 
   providers
     ..provide(Provider<Counter>.value(counter))
     ..provide(Provider<ChildCategory>.value(childCategory))
+    ..provide(Provider<DetailsInfoProvide>.value(detailsInfoProvide))
     ..provide(Provider<CategoryGoodsListProvide>.value(categoryGoodsListProvide));
 
   runApp(ProviderNode(child: MyApp(), providers: providers));
