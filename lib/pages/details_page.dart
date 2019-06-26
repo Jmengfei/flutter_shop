@@ -11,6 +11,7 @@ class DetailsPage extends StatelessWidget {
       child: Center(
         child: Text('商品id为：${goodsId}'),
       ),
+      
     );
   }
 }
