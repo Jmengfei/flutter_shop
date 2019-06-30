@@ -39,6 +39,8 @@ dependencies:
   fluttertoast: ^3.1.0
   # 路由管理
   fluro: ^1.5.0
+  # html
+  flutter_html: ^0.9.6
 
 
 dev_dependencies:
