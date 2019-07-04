@@ -41,6 +41,8 @@ dependencies:
   fluro: ^1.5.0
   # html
   flutter_html: ^0.9.6
+  #sharedPreferences
+  shared_preferences: ^0.5.2
 
 
 dev_dependencies:
