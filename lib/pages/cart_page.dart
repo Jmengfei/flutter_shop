@@ -6,6 +6,7 @@ import 'package:provide/provide.dart';
 import '../pages/cart_page/cart_item.dart';
 import '../pages/cart_page/cart_bottom.dart';
 
+
 class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,16 +22,21 @@ class CartPage extends StatelessWidget {
 
             return Stack(
               children: <Widget>[
-                ListView.builder(
-                itemCount: cartList.length,
-                  itemBuilder: (context,index){
-                    return CartItem(cartList[index]);
-                  }),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                child: CartBottom(),
-              )
+                Provide<CartProvide>(
+                  builder: (context,child,childCategory){
+                    cartList = Provide.value<CartProvide>(context).cartList;
+                    return ListView.builder(
+                        itemCount: cartList.length,
+                        itemBuilder: (context,index){
+                          return CartItem(cartList[index]);
+                        });
+                  },
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: CartBottom(),
+                )
               ],
             );
 
